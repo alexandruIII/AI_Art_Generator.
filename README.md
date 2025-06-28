@@ -1,1 +1,1 @@
-# AI_Art_Generator.
+Generarea de Imagini Artistice cu Inteligență Artificială

@@ -1,0 +1,118 @@
+Pașii de compilare ai aplicației
+
+Pașii de compilare ai aplicației sunt următorii:
+Inițializarea mediului de rulare;
+Încărcarea modelului pre-antrenat (ONNX);
+Preprocesarea imaginii de intrare;
+Executarea inferenței AI (stilizarea propriu-zisă);
+Post-procesarea rezultatului și afișarea acestuia.
+
+Când lansăm aplicația (python app_onnx.py), prima parte care se întâmplă este încărcarea bibliotecilor necesare:
+
+import gradio as gr
+import numpy as np
+from PIL import Image
+import onnxruntime as ort
+import cv2
+
+Aici, practic, Python își aduce în memorie toate uneltele de care va avea nevoie:
+onnxruntime pentru a interpreta și rula modelul antrenat;
+PIL și OpenCV pentru a converti imaginea în formate potrivite;
+NumPy pentru a lucra cu datele imaginii ca matrici;
+Gradio pentru interfața grafică.
+
+ Aici, „compilarea” este mai degrabă o pregătire dinamică, în care fiecare bibliotecă este încărcată și ținută în RAM pentru a fi utilizată imediat.
+
+Aceasta este o etapă-cheie în încărcarea modelului de rețea neuronală – ONNX:
+
+sess = ort.InferenceSession("mosaic-9.onnx")
+input_name = sess.get_inputs()[0].name
+Ce se întâmplă în spate:
+
+Modelul candy-9.onnx este un fișier binar antrenat anterior cu milioane de imagini;
+
+Acest model este deserializat în memorie și ONNX Runtime creează un grafic de calcul;
+
+„Grafic de calcul” înseamnă că modelul știe ce operații matematice să aplice pas cu pas asupra fiecărui pixel.
+ Practic, modelul este gata de execuție – la fel cum un procesor pregătește instrucțiunile înainte să ruleze un program.
+
+Utilizatorul încarcă o imagine, care se transformăm astfel:
+img = imagine.convert("RGB")
+img = np.array(img)
+img_resized = cv2.resize(img, (640, 480))
+img_np = img_resized.astype(np.float32).transpose(2, 0, 1)
+img_np = img_np[np.newaxis, :]
+img_np /= 255.0
+
+Pas cu pas:
+ convert("RGB") – convertim imaginea într-un format standard de 3 canale de culoare;
+ resize – schimbăm dimensiunea imaginii la 640x480, păstrând detaliile și raportul;
+ astype(np.float32) – transformăm valorile pixelilor în valori reale între 0 și 1;
+ transpose – schimbăm ordinea canalelor, pentru că modelul vrea [C, H, W], nu [H, W, C];
+ np.newaxis – adăugăm o dimensiune pentru batch-ul de imagini;
+ /= 255.0 – normalizăm imaginea, pentru că modelul a fost antrenat pe imagini între 0 și 1.
+ Devine o matrice uriașă de numere reale – o hartă matematică a culorilor.
+
+După ce imaginea este transformată într-o matrice de tip [1, 3, 480, 640], adică:
+
+1 imagine în batch,
+3 canale de culoare (RGB),
+480x640 dimensiunea imaginii,
+
+Apoi vine momentul-cheie:
+
+output = sess.run(None, {input_name: img_np})[0]
+ Ce se întâmplă de fapt?
+
+Aceasta este inferența – modelul pre-antrenat (mosaic-9.onnx) aplică o suită de straturi de rețea neuronală convoluțională (CNN) peste imagine. Mai precis:
+
+ În spatele liniei sess.run(...), modelul aplică:
+Filtre convoluționale – detectează margini, forme, texturi;
+Straturi ReLU – adaugă non-linearitate, astfel încât stilizarea să nu fie doar o simplă filtrare;
+Pooling sau straturi reziduale – concentrează informația și reduce dimensiunea;
+Straturi de upsampling și reconstrucție – imaginea este „recompusă” artistic, dar cu noul stil învățat.
+
+ La final, imaginea nu mai este o simplă copie a celei originale, ci o reinterpretare în stilul artistic învățat de model (în cazul nostru, stilul pictural „Candy”, inspirat de stiluri clasice cu pensulație și lumină artistică).
+
+Gândește-te la model ca la un pictor digital care „înțelege” compoziția originală și o recreează cu pensula lui proprie.
+
+ 6. Post-procesarea imaginii: din tensori înapoi în culori
+După inferență, avem încă o imagine sub formă de tensor (matrice de float-uri între 0 și 1). Dar trebuie să o transformăm înapoi în format vizibil pe ecran.
+
+output = output.squeeze().transpose(1, 2, 0)
+output = np.clip(output, 0, 1)
+output_img = Image.fromarray((output * 255).astype(np.uint8))
+
+Pas cu pas:
+squeeze() elimină dimensiunea batch (devine [3, 480, 640]);
+transpose(1, 2, 0) o aduce înapoi la formatul [480, 640, 3] pentru afișare;
+clip(output, 0, 1) asigură că nu avem valori negative sau >1;
+* 255 și astype(np.uint8) transformă imaginea înapoi în format de pixel (0–255);
+Image.fromarray(...) creează un obiect imagine compatibil cu PIL și Gradio.
+
+ Acum avem o imagine reală, complet stilizată, pregătită să fie salvată, exportată sau pur și simplu admirată.
+
+Ultimul pas este cel care face aplicația capabilă de interacțiune:
+
+gr.Interface(
+    fn=aplica_stil,
+    inputs=gr.Image(type="pil"),
+    outputs=gr.Image(type="pil"),
+    title="Aplicație AI - Stil Artistic Candy (ONNX)",
+    description="Încarcă o imagine și aplică un stil artistic neural."
+).launch()
+ Cu gr.Interface, folosind Gradio:
+Spunem că funcția aplica_stil() va fi rulată când utilizatorul încarcă o imagine;
+Setăm tipul imaginilor (PIL = Python Imaging Library);
+Dăm aplicației un titlu și o descriere frumoasă;
+launch() pornește serverul local cu interfața grafică accesibilă din browser.
+
+În concluzie, deși nu „compilăm” cod în sens clasic, parcurgem o suită de pași echivalenți:
+
+Etapă	                Ce face	                                     Echivalent compilare
+Import module	        Încarcă biblioteci	                     Linker
+Load model	        Deschide .onnx și construiește graficul	     Deserializare binar
+Preprocesare	        Transformă imaginea în tensor	             Preprocesare input
+Inference	        Aplică straturi de CNN pentru stilizare      Execuție algoritmică AI
+Postprocesare	        Transformă tensor în imagine	             Conversie output
+Interfață Gradio	Leagă codul de utilizator	             UI binding

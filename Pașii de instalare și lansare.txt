@@ -1,0 +1,38 @@
+Pașii de instalare și lansare Generarea de Imagini Artistice cu Inteligență Artificială Crașovan Alexandru
+
+I)Sunt necesare următoarele instalate:
+1)Python 3.10 sau 3.11
+Se descarcă de pe: https://www.python.org/downloads/
+La instalare, se bifează "Add Python to PATH"
+2)Git
+Se descarcă de pe: https://git-scm.com/downloads
+3)Visual Studio Code
+Se descarcă de pe: https://code.visualstudio.com/
+Se instalează extensia Python din marketplace
+
+II)Instalare biblioteci necesare:
+Se deschide internetul și se inserează următoarea adresă pentru obținerea stilului candy: 
+https://github.com/onnx/models/raw/refs/heads/main/validated/vision/style_transfer/fast_neural_style/model/candy-9.onnx
+Se deschide Command Prompt pentru a scrie comenziile:
+pip install gradio
+pip install pillow gradio
+pip install opencv-python
+pip install torch torchvision pillow gradio
+pip install gradio numpy onnxruntime opencv-python pillow
+
+III)Organizarea fișierelor
+Se creează un folder AI_Generator_Imagini și în el se pun:
+1)app_onnx.py - fișierul cu codul aplicației
+2)candy-9.onnx - fișierul modelului AI
+3)README.txt - fișierul cu instrucțiuni
+
+IV)Lansarea aplicației
+1)Se deschide Command Prompt pentru a scrie comenziile:
+cd /d D:\AI_Generator_Imagini (se înlocuiește D: cu litera discului tău dacă e nevoie)
+python app_onnx.py ( pentru pornirea aplicației )
+2) Dacă totul este în regulă, aplicația se va deschide într-un browser de forma:
+http://127.0.0.1:7860/
+3) În interfața grafică se încarcă o imagine (JPG, PNG) iar în urma apăsării butonului se obține imaginea schimbată.
+
+
+

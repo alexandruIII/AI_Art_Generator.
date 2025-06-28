@@ -26,6 +26,7 @@ Se creează un folder AI_Generator_Imagini și în el se pun:
 2)candy-9.onnx - fișierul modelului AI
 3)README.txt - fișierul ce duce la Github
 4)Pașii de instalare și lansare.txt - fișierul cu instrucțiuni
+5)Pașii de compilare ai aplicației.txt - fișierul ce explică compilarea
 
 IV)Lansarea aplicației
 1)Se deschide Command Prompt pentru a scrie comenziile:

@@ -36,6 +36,6 @@ gr.Interface(
     fn=aplica_stil,
     inputs=gr.Image(type="pil"),
     outputs=gr.Image(type="pil"),
-    title="🎨 Aplicație AI - Stil Artistic Candy (ONNX)",
+    title="Aplicație AI - Stil Artistic Candy (ONNX)",
     description="Încarcă o imagine și aplică stilul pictural Candy.",
 ).launch()

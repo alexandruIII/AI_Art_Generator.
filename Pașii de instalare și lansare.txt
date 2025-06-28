@@ -24,7 +24,8 @@ III)Organizarea fișierelor
 Se creează un folder AI_Generator_Imagini și în el se pun:
 1)app_onnx.py - fișierul cu codul aplicației
 2)candy-9.onnx - fișierul modelului AI
-3)README.txt - fișierul cu instrucțiuni
+3)README.txt - fișierul ce duce la Github
+4)Pașii de instalare și lansare.txt - fișierul cu instrucțiuni
 
 IV)Lansarea aplicației
 1)Se deschide Command Prompt pentru a scrie comenziile:
